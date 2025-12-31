@@ -7,12 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ asset('assets/css/login.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.3/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.min.css">
 </head>
 <body>
     <div class="login-container">
         <div class="login-card">
-            <!-- Logo Section -->
             <div class="logo-section">
                 <div class="logo-icon">
                     <i class="bi bi-gear-fill"></i>
@@ -21,15 +20,12 @@
                 <p class="brand-tagline">The Starter App for metinca application web program</p>
             </div>
 
-            <!-- Alert Example (hidden by default) -->
             <div class="alert alert-danger d-none" id="errorAlert" role="alert">
                 <i class="bi bi-exclamation-circle-fill me-2"></i>
                 <span id="errorMessage">Username atau password salah!</span>
             </div>
 
-            <!-- Login Form -->
-            <form id="loginForm">
-                <!-- Username/Email -->
+            <form id="loginForm" action="{{ route('login') }}" method="POST">
                 @csrf
                 <div class="mb-3">
                     <label for="username" class="form-label">
@@ -43,7 +39,6 @@
                     </div>
                 </div>
 
-                <!-- Password -->
                 <div class="mb-3">
                     <label for="password" class="form-label">
                         <i class="bi bi-lock-fill me-1"></i>Password
@@ -56,10 +51,9 @@
                     </div>
                 </div>
 
-                <!-- Remember & Forgot -->
                 <div class="remember-forgot">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="remember">
+                        <input class="form-check-input" type="checkbox" name="remember" id="remember">
                         <label class="form-check-label" for="remember">
                             Ingat saya
                         </label>
@@ -67,43 +61,24 @@
                     <a href="#" class="forgot-link">Lupa password?</a>
                 </div>
 
-                <!-- Login Button -->
-                <button type="submit" class="btn-login">
+                <button type="submit" class="btn-login" id="submitBtn">
                     <i class="bi bi-box-arrow-in-right me-2"></i>Masuk
                 </button>
             </form>
 
-            {{-- <!-- Divider -->
-            <div class="divider">
-                <span>atau masuk dengan</span>
-            </div>
-
-            <!-- Social Login -->
-            <div class="social-login">
-                <button class="btn-social" onclick="socialLogin('google')">
-                    <i class="bi bi-google"></i>
-                    Google
-                </button>
-                <button class="btn-social" onclick="socialLogin('microsoft')">
-                    <i class="bi bi-microsoft"></i>
-                    Microsoft
-                </button>
-            </div>
-
-            <!-- Sign Up Link -->
             <div class="signup-link">
-                Belum punya akun? <a href="#">Daftar sekarang</a>
-            </div> --}}
-            <div class="signup-link">
-                kembali ke <a href="/home">Homepage</a>
+                Belum punya akun? <a href="{{ route('register') }}">Daftar sekarang</a>
+            </div>
+            
+            <div class="signup-link mt-2">
+                atau <a href="/home">Kembali ke Homepage</a>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.3/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
-    <script src="{{ asset('js/app.js') }}"></script>
     <script>
         // Toggle Password Visibility
         function togglePassword() {
@@ -125,42 +100,49 @@
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const remember = document.getElementById('remember').checked;
-
-            var formData = new FormData(this);
+            const form = this;
+            const submitBtn = document.getElementById('submitBtn');
+            const originalBtnText = submitBtn.innerHTML;
             
-            // Simulate login validation
-            if (username && password) {
-                // Show success message (in real app, this would be an API call)
-                //console.log('Login attempt:', { username, password, remember });
-
-                App.loading('Proses login');
-
-                App.ajax('{{ route('login.store') }}', 'POST',formData).then(response => {
-                    // Handle successful login
-                    // For example, redirect to dashboard
+            // Ambil data form
+            const formData = new FormData(form);
+            
+            // Loading State
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Loading...';
+            
+            // Menggunakan Axios langsung untuk menghindari error jika App object tidak ada
+            axios.post(form.action, formData)
+                .then(response => {
+                    // Berhasil
                     Swal.fire({
                         title: 'Login Berhasil',
                         text: 'Selamat datang kembali!',
                         icon: 'success',
-                        confirmButtonText: 'Lanjutkan'
+                        timer: 1500,
+                        showConfirmButton: false
                     }).then(() => {
-                    window.location.href = '{{ route('dashboard') }}';
+                        window.location.href = '{{ route("dashboard") }}';
                     });
-                }).catch(error => {
-                    // Handle login error
-                    App.closeLoading();
-                    App.error('Gagal Login',error.response.data.message || 'Terjadi kesalahan saat login.');
+                })
+                .catch(error => {
+                    // Gagal
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+
+                    let message = 'Terjadi kesalahan pada server.';
+                    
+                    if (error.response) {
+                        if (error.response.status === 422) {
+                            // Error validasi (ValidationException)
+                            message = error.response.data.message || 'Username atau password salah.';
+                        } else if (error.response.data && error.response.data.message) {
+                            message = error.response.data.message;
+                        }
+                    }
+
+                    showError(message);
                 });
-                // Example: Show error
-                // showError('Username atau password salah!');
-                
-                // Example: Successful login redirect
-                //alert('Login berhasil! Redirecting...');
-                // window.location.href = 'dashboard.html';
-            }
         });
 
         // Show Error Message
@@ -171,21 +153,21 @@
             errorMessage.textContent = message;
             errorAlert.classList.remove('d-none');
             
-            // Auto hide after 5 seconds
+            // Shake effect
+            errorAlert.classList.add('shake');
+            setTimeout(() => errorAlert.classList.remove('shake'), 500);
+
+            // Auto hide
             setTimeout(() => {
                 errorAlert.classList.add('d-none');
             }, 5000);
         }
 
-        
-
         // Hide error alert when user starts typing
-        document.getElementById('username').addEventListener('input', function() {
-            document.getElementById('errorAlert').classList.add('d-none');
-        });
-
-        document.getElementById('password').addEventListener('input', function() {
-            document.getElementById('errorAlert').classList.add('d-none');
+        ['username', 'password'].forEach(id => {
+            document.getElementById(id).addEventListener('input', function() {
+                document.getElementById('errorAlert').classList.add('d-none');
+            });
         });
     </script>
 </body>

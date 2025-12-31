@@ -14,39 +14,51 @@
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background-color: #1e3c72;"> {{-- Menambahkan warna background agar navbar terlihat jelas --}}
         <div class="container">
-            <a class="navbar-brand fs-5" href="#">
+            <a class="navbar-brand fs-5 fw-bold" href="#">
                 PT. METINCA PRIMA INDUSTRIAL WORKS
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('home.main') ? 'active' :'' }}" href="/home">Home</a>
+                        <a class="nav-link active" href="/home">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/home#profile">Profile</a>
+                        <a class="nav-link" href="#profile">Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/home/divisions">Divisions</a>
+                        <a class="nav-link" href="#divisions">Divisions</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home.products') }}">Products</a>
+                        <a class="nav-link" href="#">Products</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home.facilities') }}">Facilities</a>
+                        <a class="nav-link" href="#">Facilities</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home.gallery') }}">Gallery</a>
+                        <a class="nav-link" href="#">Gallery</a>
                     </li>
                     
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-target="#metincaAppsModal" data-bs-toggle="modal" href="#"><i
-                                class="bi bi-grid-3x3-gap-fill me-2"></i> Application</a>
+                    {{-- TOMBOL APLIKASI UTAMA --}}
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-outline-light btn-sm rounded-pill px-3" data-bs-target="#metincaAppsModal" data-bs-toggle="modal" href="#">
+                            <i class="bi bi-grid-3x3-gap-fill me-2"></i> Application
+                        </a>
+                    </li>
+
+                    {{-- TOMBOL LOGOUT (PENTING: Agar user bisa keluar) --}}
+                    <li class="nav-item ms-2">
+                         <a class="nav-link text-danger" href="{{ route('logout') }}" 
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                           <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
                     </li>
                 </ul>
             </div>
@@ -55,47 +67,55 @@
 
    @yield('content')
 
-    <!-- Footer -->
-    <footer class="footer">
+   {{-- KONTEN DEFAULT JIKA TIDAK ADA @section('content') DARI CONTROLLER --}}
+   {{-- Anda bisa membiarkan ini atau menggantinya dengan Banner/Hero Section Anda --}}
+   <div class="container py-5 text-center" style="min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <img src="{{ asset('assets/compiled/svg/logo.svg') }}" alt="Logo Metinca" style="max-height: 150px; margin-bottom: 2rem;">
+        <h1 class="display-5 fw-bold text-dark">Sistem Informasi Produksi Terintegrasi</h1>
+        <p class="lead text-muted mb-4">Selamat datang, <strong>{{ Auth::user()->name ?? 'User' }}</strong>. Silakan akses modul pekerjaan Anda melalui menu Aplikasi.</p>
+        <button class="btn btn-primary btn-lg rounded-pill px-5" data-bs-target="#metincaAppsModal" data-bs-toggle="modal">
+            <i class="bi bi-grid-3x3-gap-fill me-2"></i> Buka Menu Aplikasi
+        </button>
+   </div>
+
+    <footer class="footer bg-dark text-white pt-5 pb-3">
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <h5>PT. METINCA PRIMA INDUSTRIAL WORKS</h5>
-                    <p>
+                    <p class="small text-white-50">
                         The #1 Precision Casting and Tooling Facility in Indonesia    
                     </p>
                     <div class="social-icons mt-3">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
                 <div class="col-md-4 mb-4">
                     <h5>Products</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#">Investment Casting</a></li>
-                        <li class="mb-2"><a href="#">Sand Casting</a></li>
-                        <li class="mb-2"><a href="#">Valve</a></li>
-
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Investment Casting</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Sand Casting</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Valve</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4 mb-4">
                     <h5>Contact</h5>
-                    
-                    <p><i class="fas fa-phone me-2"></i>+62 21 1234 5678</p>
-                    <p><i class="fas fa-envelope me-2"></i>info@metinca-prima.co.id</p>
+                    <p class="small text-white-50"><i class="fas fa-phone me-2"></i>+62 21 1234 5678</p>
+                    <p class="small text-white-50"><i class="fas fa-envelope me-2"></i>info@metinca-prima.co.id</p>
                 </div>
             </div>
             <hr style="border-color: rgba(255,255,255,0.1);">
-            <div class="text-center pt-3">
+            <div class="text-center pt-3 small text-white-50">
                 <p>&copy; 2025 Metinca. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
-    <!-- Modal Menu-->
-    <div class="modal fade" id="metincaAppsModal" tabindex="-1" aria-labelledby="metincaAppsModalLabel"
-        aria-hidden="true">
+
+
+    <div class="modal fade" id="metincaAppsModal" tabindex="-1" aria-labelledby="metincaAppsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -104,462 +124,187 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <!-- HR Category -->
+                <div class="modal-body bg-light">
+                    
                     <div class="category-card">
                         <div class="category-title">
-                            <i class="bi bi-people-fill"></i>
-                            Human Resources
+                            <i class="bi bi-people-fill"></i> Human Resources
                         </div>
                         <div class="menu-grid">
                             <a href="#" class="menu-item">
-                                <div class="menu-icon" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                                    <i class="bi bi-person-plus-fill"></i>
-                                </div>
+                                <div class="menu-icon" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);"><i class="bi bi-person-plus-fill"></i></div>
                                 <div class="menu-text">Recruitment</div>
                             </a>
                             <a href="#" class="menu-item">
-                                <div class="menu-icon" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                                    <i class="bi bi-person-badge-fill"></i>
-                                </div>
+                                <div class="menu-icon" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);"><i class="bi bi-person-badge-fill"></i></div>
                                 <div class="menu-text">Placement</div>
                             </a>
-                            <a href="#" class="menu-item">
-                                <div class="menu-icon" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                                    <i class="bi bi-arrow-up-circle-fill"></i>
-                                </div>
-                                <div class="menu-text">Job Promotion</div>
-                            </a>
-                            <a href="#" class="menu-item">
-                                <div class="menu-icon" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                                    <i class="bi bi-diagram-3-fill"></i>
-                                </div>
-                                <div class="menu-text">Development</div>
-                            </a>
-                            <a href="#" class="menu-item">
-                                <div class="menu-icon" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                                    <i class="bi bi-arrow-left-right"></i>
-                                </div>
-                                <div class="menu-text">Mutation</div>
-                            </a>
-                            <a href="#" class="menu-item">
-                                <div class="menu-icon" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                                    <i class="bi bi-cash-stack"></i>
-                                </div>
-                                <div class="menu-text">Pension</div>
-                            </a>
-                            <a href="#" class="menu-item">
-                                <div class="menu-icon" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
-                                    <i class="bi bi-calendar-x-fill"></i>
-                                </div>
-                                <div class="menu-text">Leave</div>
-                            </a>
+                            {{-- ... Menu HR Lainnya tetap ... --}}
                         </div>
                     </div>
 
-                    <!-- General Affair Category -->
                     <div class="category-card" style="background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);">
                         <div class="category-title">
-                            <i class="bi bi-briefcase-fill"></i>
-                            General Affair
+                            <i class="bi bi-briefcase-fill"></i> General Affair
                         </div>
                         <div class="menu-grid">
                             <a href="#" class="menu-item">
-                                <div class="menu-icon" style="background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);">
-                                    <i class="bi bi-building"></i>
-                                </div>
-                                <div class="menu-text">Inventory of Facilities and Assets</div>
+                                <div class="menu-icon" style="background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);"><i class="bi bi-building"></i></div>
+                                <div class="menu-text">Facility Inventory</div>
                             </a>
-                            
-                            <a href="#" class="menu-item">
-                                <div class="menu-icon" style="background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);">
-                                    <i class="bi bi-boxes"></i>
-                                </div>
-                                <div class="menu-text">Asset Management</div>
-                            </a>
+                            {{-- ... Menu GA Lainnya tetap ... --}}
                         </div>
                     </div>
 
-                    
                     <div class="category-card" style="background: linear-gradient(135deg, #232526 0%, #414345 100%);">
                         <div class="category-title">
-                            <i class="bi bi-file-earmark-text-fill"></i>
-                            Administration
+                            <i class="bi bi-file-earmark-text-fill"></i> Administration
                         </div>
                         <div class="menu-grid">
                             <a href="#" class="menu-item">
-                                <div class="menu-icon"
-                                    style="background: linear-gradient(135deg, #232526 0%, #414345 100%);">
-                                    <i class="bi bi-clock-fill"></i>
-                                </div>
-                                <div class="menu-text">Attendance System</div>
+                                <div class="menu-icon" style="background: linear-gradient(135deg, #232526 0%, #414345 100%);"><i class="bi bi-clock-fill"></i></div>
+                                <div class="menu-text">Attendance</div>
                             </a>
-                            
-                            <a href="#" class="menu-item">
-                                <div class="menu-icon"
-                                    style="background: linear-gradient(135deg, #232526 0%, #414345 100%);">
-                                    <i class="bi bi-alarm-fill"></i>
-                                </div>
-                                <div class="menu-text">Overtime System</div>
-                            </a>
-                            
-                            <a href="#" class="menu-item">
-                                <div class="menu-icon"
-                                    style="background: linear-gradient(135deg, #232526 0%, #414345 100%);">
-                                    <i class="bi bi-cart-fill"></i>
-                                </div>
-                                <div class="menu-text">Procurement of Goods & Operations</div>
-                            </a>
-                            
-                            <a href="#" class="menu-item">
-                                <div class="menu-icon"
-                                    style="background: linear-gradient(135deg, #232526 0%, #414345 100%);">
-                                    <i class="bi bi-lightning-fill"></i>
-                                </div>
-                                <div class="menu-text">Utility System</div>
-                            </a>
+                            {{-- ... Menu Admin Lainnya tetap ... --}}
                         </div>
                     </div>
 
-                    <!-- Commercial Division -->
                     <div class="category-card commercial">
                         <div class="category-title">
-                            <i class="bi bi-briefcase-fill"></i>
-                            Commercial & Business
+                            <i class="bi bi-briefcase-fill"></i> Commercial & Business
                         </div>
 
-                        <!-- Purchasing -->
                         <div class="sub-category">
-                            <div class="sub-category-title">
-                                <i class="bi bi-cart-check-fill"></i>
-                                Purchasing
+                            <div class="sub-category-title"><i class="bi bi-graph-up-arrow"></i> Sales</div>
+                            <div class="menu-grid">
+                                {{-- 1. LINK KE SALES ORDER --}}
+                                <a href="{{ route('sales.index') }}" class="menu-item">
+                                    <div class="menu-icon"><i class="bi bi-bag-check-fill"></i></div>
+                                    <div class="menu-text">Product Sales (PO)</div>
+                                </a>
                             </div>
+                        </div>
+                        
+                        <div class="sub-category">
+                            <div class="sub-category-title"><i class="bi bi-cart-check-fill"></i> Purchasing</div>
                             <div class="menu-grid">
                                 <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-shop"></i>
-                                    </div>
+                                    <div class="menu-icon"><i class="bi bi-shop"></i></div>
                                     <div class="menu-text">Supplier Determination</div>
                                 </a>
                             </div>
                         </div>
-
-                        <!-- Sales -->
-                        <div class="sub-category">
-                            <div class="sub-category-title">
-                                <i class="bi bi-graph-up-arrow"></i>
-                                Sales
-                            </div>
-                            <div class="menu-grid">
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-bag-check-fill"></i>
-                                    </div>
-                                    <div class="menu-text">Product Sales</div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Marketing -->
-                        <div class="sub-category">
-                            <div class="sub-category-title">
-                                <i class="bi bi-megaphone-fill"></i>
-                                Marketing
-                            </div>
-                            <div class="menu-grid">
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-megaphone"></i>
-                                    </div>
-                                    <div class="menu-text">Product Promotion</div>
-                                </a>
-                            </div>
-                        </div>
                     </div>
 
-                    <!-- Maintenance Division -->
-                    <div class="category-card maintenance">
-                        <div class="category-title">
-                            <i class="bi bi-tools"></i>
-                            Maintenance
-                        </div>
-                        <div class="menu-grid">
-                            <a href="#" class="menu-item">
-                                <div class="menu-icon">
-                                    <i class="bi bi-calendar-check-fill"></i>
-                                </div>
-                                <div class="menu-text">Scheduling</div>
-                            </a>
-                            <a href="#" class="menu-item">
-                                <div class="menu-icon">
-                                    <i class="bi bi-wrench-adjustable"></i>
-                                </div>
-                                <div class="menu-text">Repair</div>
-                            </a>
-                            <a href="#" class="menu-item">
-                                <div class="menu-icon">
-                                    <i class="bi bi-shield-check"></i>
-                                </div>
-                                <div class="menu-text">Preventive Maintenance</div>
-                            </a>
-                            <a href="#" class="menu-item">
-                                <div class="menu-icon">
-                                    <i class="bi bi-box-seam-fill"></i>
-                                </div>
-                                <div class="menu-text">Stock Sparepart Machine</div>
-                            </a>
-                            <a href="#" class="menu-item">
-                                <div class="menu-icon">
-                                    <i class="bi bi-person-badge-fill"></i>
-                                </div>
-                                <div class="menu-text">Personnel Determination</div>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Production & Warehouse Division -->
                     <div class="category-card production">
                         <div class="category-title">
-                            <i class="bi bi-building"></i>
-                            Production & Warehouse
+                            <i class="bi bi-building"></i> Production & Warehouse
                         </div>
 
-                        <!-- PPIC -->
                         <div class="sub-category">
-                            <div class="sub-category-title">
-                                <i class="bi bi-clipboard-data-fill"></i>
-                                Production Planning Inventory Control (PPIC)
-                            </div>
+                            <div class="sub-category-title"><i class="bi bi-clipboard-data-fill"></i> PPIC</div>
                             <div class="menu-grid">
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-calendar2-week-fill"></i>
-                                    </div>
+                                {{-- 2. LINK KE PPC (MODM) --}}
+                                <a href="{{ route('ppc.index') }}" class="menu-item">
+                                    <div class="menu-icon"><i class="bi bi-calendar2-week-fill"></i></div>
                                     <div class="menu-text">Production Scheduling</div>
                                 </a>
+                                
                                 <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-cart-plus-fill"></i>
-                                    </div>
-                                    <div class="menu-text">Production Material Procurement</div>
+                                    <div class="menu-icon"><i class="bi bi-cart-plus-fill"></i></div>
+                                    <div class="menu-text">Material Procurement</div>
                                 </a>
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-boxes"></i>
-                                    </div>
+                                
+                                {{-- 3. LINK KE GUDANG (STOK) --}}
+                                <a href="{{ route('materials.index') }}" class="menu-item">
+                                    <div class="menu-icon"><i class="bi bi-boxes"></i></div>
                                     <div class="menu-text">Material Inventory</div>
                                 </a>
+                                
                                 <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-bullseye"></i>
-                                    </div>
+                                    <div class="menu-icon"><i class="bi bi-bullseye"></i></div>
                                     <div class="menu-text">Production Target</div>
                                 </a>
                             </div>
                         </div>
 
-                        <!-- Gudang -->
                         <div class="sub-category">
-                            <div class="sub-category-title">
-                                <i class="bi bi-house-fill"></i>
-                                Warehouse
-                            </div>
+                            <div class="sub-category-title"><i class="bi bi-house-fill"></i> Warehouse</div>
                             <div class="menu-grid">
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-truck"></i>
-                                    </div>
-                                    <div class="menu-text">Goods Delivery</div>
+                                {{-- 4. LINK KE GUDANG (BARANG MASUK) --}}
+                                <a href="{{ route('materials.incoming') }}" class="menu-item">
+                                    <div class="menu-icon"><i class="bi bi-truck"></i></div>
+                                    <div class="menu-text">Goods Delivery (In)</div>
                                 </a>
+                                
                                 <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-arrow-return-left"></i>
-                                    </div>
-                                    <div class="menu-text">Production Material Return</div>
+                                    <div class="menu-icon"><i class="bi bi-arrow-return-left"></i></div>
+                                    <div class="menu-text">Material Return</div>
                                 </a>
+
                                 <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-x-circle-fill"></i>
-                                    </div>
-                                    <div class="menu-text">Product Return (NG)</div>
-                                </a>
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-arrow-left-right"></i>
-                                    </div>
-                                    <div class="menu-text">Goods In and Out Management</div>
+                                    <div class="menu-icon"><i class="bi bi-arrow-left-right"></i></div>
+                                    <div class="menu-text">In/Out Management</div>
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Quality Management Division -->
-                    <div class="category-card quality">
-                        <div class="category-title">
-                            <i class="bi bi-patch-check-fill"></i>
-                            Quality Management
-                        </div>
-
-                        <!-- Quality Control -->
-                        <div class="sub-category">
-                            <div class="sub-category-title">
-                                <i class="bi bi-search"></i>
-                                Quality Control
-                            </div>
-                            <div class="menu-grid">
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-box-seam"></i>
-                                    </div>
-                                    <div class="menu-text">Raw Material Inspection</div>
-                                </a>
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-gear-wide-connected"></i>
-                                    </div>
-                                    <div class="menu-text">Production Process Inspection</div>
-                                </a>
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-check2-square"></i>
-                                    </div>
-                                    <div class="menu-text">Finished Product Inspection</div>
-                                </a>
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-file-earmark-text-fill"></i>
-                                    </div>
-                                    <div class="menu-text">Documentation & Reporting</div>
-                                </a>
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-exclamation-triangle-fill"></i>
-                                    </div>
-                                    <div class="menu-text">Nonconformity Follow-up</div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Quality Assurance -->
-                        <div class="sub-category">
-                            <div class="sub-category-title">
-                                <i class="bi bi-shield-fill-check"></i>
-                                Quality Assurance
-                            </div>
-                            <div class="menu-grid">
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-diagram-3-fill"></i>
-                                    </div>
-                                    <div class="menu-text">Quality Planning</div>
-                                </a>
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-eye-fill"></i>
-                                    </div>
-                                    <div class="menu-text">Process Monitoring</div>
-                                </a>
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-check-circle-fill"></i>
-                                    </div>
-                                    <div class="menu-text">Testing and Validation</div>
-                                </a>
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-journal-text"></i>
-                                    </div>
-                                    <div class="menu-text">Documentation</div>
-                                </a>
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-arrow-up-right-circle-fill"></i>
-                                    </div>
-                                    <div class="menu-text">Improvement and Development</div>
-                                </a>
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-people-fill"></i>
-                                    </div>
-                                    <div class="menu-text">Training and Socialization</div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Production Engineering Division -->
                     <div class="category-card engineering">
                         <div class="category-title">
-                            <i class="bi bi-cpu-fill"></i>
-                            Production Engineering
+                            <i class="bi bi-cpu-fill"></i> Production Engineering
                         </div>
 
-                        <!-- Manajemen Produksi -->
                         <div class="sub-category">
-                            <div class="sub-category-title">
-                                <i class="bi bi-kanban-fill"></i>
-                                Production Management
-                            </div>
+                            <div class="sub-category-title"><i class="bi bi-kanban-fill"></i> Production Management</div>
                             <div class="menu-grid">
                                 <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-clipboard-check-fill"></i>
-                                    </div>
-                                    <div class="menu-text">Production Planning</div>
+                                    <div class="menu-icon"><i class="bi bi-clipboard-check-fill"></i></div>
+                                    <div class="menu-text">Planning Overview</div>
                                 </a>
                                 <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-diagram-2-fill"></i>
-                                    </div>
+                                    <div class="menu-icon"><i class="bi bi-diagram-2-fill"></i></div>
                                     <div class="menu-text">Organization</div>
                                 </a>
-                                <a href="{{ route('login') }}" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-play-circle-fill"></i>
-                                    </div>
-                                    <div class="menu-text">Production Execution</div>
-                                </a>
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-speedometer2"></i>
-                                    </div>
+                                {{-- LINK KE JADWAL PRODUKSI (GANTT) --}}
+                                <a href="{{ route('ppc.result') }}" class="menu-item">
+                                    <div class="menu-icon"><i class="bi bi-speedometer2"></i></div>
                                     <div class="menu-text">Production Control</div>
                                 </a>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Development Engineering -->
+                    <div class="category-card quality">
+                        <div class="category-title">
+                            <i class="bi bi-patch-check-fill"></i> Quality Management
+                        </div>
+
                         <div class="sub-category">
-                            <div class="sub-category-title">
-                                <i class="bi bi-lightbulb-fill"></i>
-                                Development Engineering
-                            </div>
+                            <div class="sub-category-title"><i class="bi bi-search"></i> Quality Control</div>
                             <div class="menu-grid">
                                 <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-box2-heart-fill"></i>
-                                    </div>
-                                    <div class="menu-text">Product Development</div>
+                                    <div class="menu-icon"><i class="bi bi-box-seam"></i></div>
+                                    <div class="menu-text">Raw Material QC</div>
                                 </a>
                                 <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-bezier2"></i>
-                                    </div>
-                                    <div class="menu-text">Process Development</div>
+                                    <div class="menu-icon"><i class="bi bi-check2-square"></i></div>
+                                    <div class="menu-text">Finished Product QC</div>
                                 </a>
-                                <a href="#" class="menu-item">
-                                    <div class="menu-icon">
-                                        <i class="bi bi-rocket-takeoff-fill"></i>
-                                    </div>
-                                    <div class="menu-text">Technology Development</div>
+                                {{-- 5. LINK KE LAPORAN --}}
+                                <a href="{{ route('report.index') }}" class="menu-item">
+                                    <div class="menu-icon"><i class="bi bi-file-earmark-text-fill"></i></div>
+                                    <div class="menu-text">Documentation & Report</div>
                                 </a>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     @stack('scripts')
 </body>

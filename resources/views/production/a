@@ -1,0 +1,278 @@
+# DEMAND PLANNING MODULE (TERPISAH & SIAP PAKAI)
+
+Dokumentasi ini memisahkan **UI (View)**, **Route**, **Controller**, **Model**, dan **Database** untuk modul **Demand Planning** (Perencanaan Produksi).
+
+---
+
+## 1️⃣ ROUTE
+**File:** `routes/web.php`
+
+```php
+use App\Http\Controllers\DemandPlanningController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/demand-planning', [DemandPlanningController::class, 'index'])
+        ->name('demand.index');
+
+    Route::post('/demand-planning/store', [DemandPlanningController::class, 'store'])
+        ->name('demand.store');
+});
+```
+
+---
+
+## 2️⃣ CONTROLLER
+**File:** `app/Http/Controllers/DemandPlanningController.php`
+
+```php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Demand;
+
+class DemandPlanningController extends Controller
+{
+    public function index()
+    {
+        $demands = Demand::orderBy('period', 'desc')->get();
+        return view('production.demand-planning', compact('demands'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'period' => 'required',
+            'product' => 'required',
+            'quantity' => 'required|numeric|min:1'
+        ]);
+
+        Demand::create([
+            'period' => $request->period,
+            'product' => $request->product,
+            'quantity' => $request->quantity,
+            'status' => 'Draft'
+        ]);
+
+        return redirect()->route('demand.index')
+            ->with('success', 'Data demand berhasil disimpan');
+    }
+}
+```
+
+---
+
+## 3️⃣ MODEL
+**File:** `app/Models/Demand.php`
+
+```php
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Demand extends Model
+{
+    use HasFactory;
+
+    protected $table = 'demands';
+
+    protected $fillable = [
+        'period',
+        'product',
+        'quantity',
+        'status'
+    ];
+}
+```
+
+---
+
+## 4️⃣ DATABASE (MIGRATION)
+**Command:**
+```bash
+php artisan make:migration create_demands_table
+```
+
+**File:** `database/migrations/xxxx_xx_xx_create_demands_table.php`
+
+```php
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    public function up(): void
+    {
+        Schema::create('demands', function (Blueprint $table) {
+            $table->id();
+            $table->string('period'); // contoh: 2025-01
+            $table->string('product');
+            $table->integer('quantity');
+            $table->string('status')->default('Draft');
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('demands');
+    }
+};
+```
+
+Jalankan:
+```bash
+php artisan migrate
+```
+
+---
+
+## 5️⃣ UI (VIEW)
+**File:** `resources/views/production/demand-planning.blade.php`
+
+```blade
+@extends('layouts.app')
+
+@section('title', 'Demand Planning')
+
+@section('content')
+<div class="page-heading">
+    <h3>Demand Planning</h3>
+    <p class="text-muted">Tahap Perencanaan Produksi</p>
+</div>
+
+<div class="page-content">
+    <section class="row">
+
+        {{-- FORM INPUT DEMAND --}}
+        <div class="col-12 col-lg-4">
+            <div class="card">
+                <div class="card-header"><h4>Input Demand</h4></div>
+                <div class="card-body">
+                    <form action="{{ route('demand.store') }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label>Periode</label>
+                            <input type="month" name="period" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Produk</label>
+                            <input type="text" name="product" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Jumlah Demand</label>
+                            <input type="number" name="quantity" class="form-control" required>
+                        </div>
+                        <button class="btn btn-primary w-100">Simpan Demand</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- TABEL DEMAND --}}
+        <div class="col-12 col-lg-8">
+            <div class="card">
+                <div class="card-header"><h4>Daftar Demand</h4></div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Periode</th>
+                                <th>Produk</th>
+                                <th>Quantity</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($demands as $demand)
+                            <tr>
+                                <td>{{ $demand->period }}</td>
+                                <td>{{ $demand->product }}</td>
+                                <td>{{ $demand->quantity }}</td>
+                                <td><span class="badge bg-info">{{ $demand->status }}</span></td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</div>
+@endsection
+```
+
+---
+
+## ✅ STATUS AKHIR
+✔ Struktur rapi (MVC)
+✔ Fokus Perencanaan Produksi
+✔ Siap dikembangkan ke **Forecasting / MRP / MCDM**
+
+Jika mau, langkah berikutnya:
+- 🔢 Tambah **forecast (Moving Average / Weighted)**
+- ⚖️ Integrasi **Multi Objective Decision Making**
+- 📊 Dashboard khusus Production Planning
+
+
+<!-- Dashboard -->
+<li class="sidebar-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+    <a href="{{ route('dashboard') }}" class="sidebar-link">
+        <i class="bi bi-speedometer2"></i>
+        <span>Dashboard</span>
+    </a>
+</li>
+
+<!-- Demand Planning --> 
+<li class="sidebar-item {{ request()->is('demand-planning*') ? 'active' : '' }}">
+    <a href="{{ route('demand.index') }}" class="sidebar-link">
+        <i class="bi bi-clipboard-data"></i>
+        <span>Demand Planning</span>
+    </a>
+</li>
+
+<!-- Production Planning -->
+<li class="sidebar-item has-sub {{ request()->is('production-planning*') ? 'active' : '' }}">
+    <a href="#" class="sidebar-link">
+        <i class="bi bi-diagram-3-fill"></i>
+        <span>Production Planning</span>
+    </a>
+    <ul class="submenu">
+        <li class="submenu-item">
+            <a href="#" class="submenu-link">
+                Alternatif Rencana Produksi
+            </a>
+        </li>
+        <li class="submenu-item">
+            <a href="#" class="submenu-link">
+                Detail Rencana Produksi
+            </a>
+        </li>
+    </ul>
+</li>
+
+<!-- Decision Support MODM -->
+<li class="sidebar-item has-sub {{ request()->is('decision-support*') ? 'active' : '' }}">
+    <a href="#" class="sidebar-link">
+        <i class="bi bi-bar-chart-steps"></i>
+        <span>Decision Support (MODM)</span>
+    </a>
+    <ul class="submenu">
+        <li class="submenu-item">
+            <a href="#" class="submenu-link">
+                Kriteria & Bobot
+            </a>
+        </li>
+        <li class="submenu-item">
+            <a href="#" class="submenu-link">
+                Matriks Keputusan
+            </a>
+        </li>
+        <li class="submenu-item">
+            <a href="#" class="submenu-link">
+                Hasil & Ranking
+            </a>
+        </li>
+    </ul>
+</li>
